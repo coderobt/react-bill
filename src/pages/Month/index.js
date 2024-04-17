@@ -21,10 +21,24 @@ const Month = () => {
   const [currentDate,setCurrentDate]=useState(()=>{
     return dayjs(new Date()).format('YYYY-MM')
   })
+  const [currentMonthList,setMonthList]=useState([])
 
+  const monthResult = useMemo(()=>{
+    // 支出 / 收入 / 结余
+    const pay = currentMonthList.filter(item=>item.type==='pay').reduce((a,c)=>a+c.money,0)
+    const income = currentMonthList.filter(item=>item.type==='income').reduce((a,c)=>a+c.money,0)
+    return {
+      pay,
+      income,
+      total:pay+income
+    }
+  },[currentMonthList])
+  // 确认回调
   const onConfirm=(date)=>{
     setDateVisible(false)
-    setCurrentDate(dayjs(date).format('YYYY-MM'))
+    const formatDate = dayjs(date).format('YYYY-MM')
+    setMonthList(monthGroup[formatDate])
+    setCurrentDate(formatDate)
   }
 
   return (
@@ -45,15 +59,15 @@ const Month = () => {
           {/* 统计区域 */}
           <div className='twoLineOverview'>
             <div className="item">
-              <span className="money">{100}</span>
+              <span className="money">{monthResult.pay.toFixed(2)}</span>
               <span className="type">支出</span>
             </div>
             <div className="item">
-              <span className="money">{200}</span>
+              <span className="money">{monthResult.income.toFixed(2)}</span>
               <span className="type">收入</span>
             </div>
             <div className="item">
-              <span className="money">{200}</span>
+              <span className="money">{monthResult.total.toFixed(2)}</span>
               <span className="type">结余</span>
             </div>
           </div>
