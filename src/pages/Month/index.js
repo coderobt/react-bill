@@ -1,11 +1,12 @@
 import { NavBar, DatePicker } from 'antd-mobile'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import './index.scss'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import _ from 'lodash'
 import DailyBill from './components/DayBill'
+
 
 const Month = () => {
   // 按月做数据分组
@@ -52,6 +53,14 @@ const Month = () => {
     }
   },[currentMonthList])
 
+  // 初始化渲染拿到当前月的数据显示
+  useEffect(()=>{
+    const nowDate = dayjs().format('YYYY-MM')
+    //边界值的控制
+    if(monthGroup[nowDate]){
+      setMonthList(monthGroup[nowDate])
+    }
+  },[monthGroup])
   return (
     <div className="monthlyBill">
       <NavBar className="nav" backArrow={false}>
