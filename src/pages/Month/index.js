@@ -5,6 +5,7 @@ import './index.scss'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import _ from 'lodash'
+import DailyBill from './components/DayBill'
 
 const Month = () => {
   // 按月做数据分组
@@ -13,7 +14,7 @@ const Month = () => {
     //return出去计算之后的值
     return _.groupBy(billList,(item)=>dayjs(item.date).format('YYYY-MM'))
   },[billList])
-  console.log(monthGroup);
+  // console.log(monthGroup);
   // 控制弹框的打开和关闭
   const [dateVisible, setDateVisible] = useState(false)
 
@@ -40,6 +41,16 @@ const Month = () => {
     setMonthList(monthGroup[formatDate])
     setCurrentDate(formatDate)
   }
+
+  // 当前月按照日来做分组
+  const dayGroup = useMemo(()=>{
+    const groupData = _.groupBy(currentMonthList,(item)=>dayjs(item.date).format('YYYY-MM-DD'))
+    const keys= Object.keys(groupData)
+    return {
+      groupData,
+      keys
+    }
+  },[currentMonthList])
 
   return (
     <div className="monthlyBill">
@@ -83,6 +94,12 @@ const Month = () => {
             onClose={()=>setDateVisible(false)}
           />
         </div>
+        {/* 单日列表统计 */}
+        {
+          dayGroup.keys.map(key=>{
+            return <DailyBill key={key} date={key} billList={dayGroup.groupData[key]}/>
+          })
+        }
       </div>
     </div >
   )
